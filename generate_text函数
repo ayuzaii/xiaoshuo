@@ -1,0 +1,22 @@
+import random
+
+def generate_text(model, id_to_word, topic, length):
+    # 将主题转换为id序列
+    topic_ids = [id_to_word.index(word) for word in topic.split()]
+    # 随机选取一个主题词开始生成
+    seed_word = random.choice(topic_ids)
+    # 初始化生成文本的序列
+    generated_ids = [seed_word]
+    # 循环生成文本
+    for i in range(length):
+        # 将生成文本的序列转换为模型的输入
+        input_seq = tf.expand_dims(generated_ids, 0)
+        # 计算模型的输出
+        logits = model(input_seq)
+        # 从模型的输出中随机选取一个单词
+        word_id = tf.random.categorical(logits=logits[:, -1, :], num_samples=1)[0, 0].numpy()
+        # 将选取的单词添加到生成文本的序列中
+        generated_ids.append(word_id)
+    # 将生成文本的id序列转换为文本
+    generated_text = ' '.join([id_to_word[index] for index in generated_ids])
+    return generated_text
