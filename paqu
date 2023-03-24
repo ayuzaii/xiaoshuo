@@ -1,0 +1,27 @@
+import requests
+from bs4 import BeautifulSoup
+
+# 爬取小说章节内容
+def get_chapter_content(url):
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content, 'html.parser')
+    content = soup.select('#content')[0].text.strip()
+    return content
+
+# 爬取小说章节列表
+def get_chapter_list(url):
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content, 'html.parser')
+    chapter_list = []
+    for chapter in soup.select('.chapter-list ul li a'):
+        chapter_title = chapter.text.strip()
+        chapter_url = chapter.get('href')
+        chapter_content = get_chapter_content(chapter_url)
+        chapter_list.append(chapter_title + '\n' + chapter_content)
+    return chapter_list
+
+# 爬取整本小说
+def crawl_novel(url, file_name):
+    chapter_list = get_chapter_list(url)
+    with open(file_name, 'w', encoding='utf-8') as f:
+        f.write('\n'.join(chapter_list))
