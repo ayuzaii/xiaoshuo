@@ -1,0 +1,18 @@
+import nltk
+from nltk.tokenize import sent_tokenize, word_tokenize
+from nltk.corpus import stopwords
+nltk.download('punkt')
+nltk.download('stopwords')
+
+# 加载停用词表
+stop_words = set(stopwords.words('english'))
+
+# 预处理函数
+def preprocess(text):
+    # 分句
+    sentences = sent_tokenize(text)
+    # 分词并去停用词
+    words = []
+    for sentence in sentences:
+        words.extend([word.lower() for word in word_tokenize(sentence) if word.isalpha() and word.lower() not in stop_words])
+    return words
